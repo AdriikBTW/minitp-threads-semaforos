@@ -1,6 +1,6 @@
-= MiniTP SOR - Threads y Semáforos
-{docdate} COM-02
-Alumno: Romero Adrián Agustín. Docentes: Andres Rojas Paredes; Leandro Dikenstein Hidalgo.
+= MiniTP SOR: Threads y Semáforos
+Romero Adrián Agustín; Franco Román Pachao; Nahuel Carrizo
+v1, {docdate}, COM-02. Docentes Andres Rojas Paredes; Leandro Dikenstein Hidalgo
 :title-page:
 :title-logo-image: image:ungs.png[]
 :toc:
