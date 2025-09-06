@@ -1,5 +1,5 @@
 = MiniTP SOR: Threads y Semáforos
-Romero Adrián Agustín; Franco Román Pachao; Nahuel Carrizo
+Romero Adrián Agustín; Franco Román Pachao; Nahuel Carrizo; Lucas Rodríguez
 v1, {docdate}, COM-02. Docentes Andres Rojas Paredes; Leandro Dikenstein Hidalgo
 :title-page:
 :title-logo-image: image:ungs.png[]
