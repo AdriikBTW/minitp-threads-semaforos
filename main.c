@@ -8,6 +8,7 @@ sem_t mutex_comandante;
 sem_t naves_en_posicion;
 sem_t orden_ataque;
 sem_t ciudades_caidas;
+sem_t sincronizacion_batalla;
 
 void hablarConComandanteExtraterrestre(){
         printf("Presidente: Bienvenido comandante alien \n");
@@ -21,7 +22,7 @@ void tomarPosicionEnMegaCiudad(){
 void atacarMegaciudad(){
         printf("La nave comienza el ataque a la ciudad \n");
 }
-void iniciarPotocoloDefensivo(){
+void iniciarProtocoloDefensivo(){
         printf("La ciudad inicia el protocolo de defensa contra las naves \n");
 }
 void contraatacarNaves(){
@@ -48,16 +49,27 @@ void* presidentes(void* arg){
         sem_post(&mutex_comandante);
 }
 void* naves_destructoras(void* arg){
-        tomarPosicionEnMegaCiudad();
-        sem_post(&naves_en_posicion); // aviso que estoy lista
+    // Fase 1: Tomar posición
+    tomarPosicionEnMegaCiudad();
+    sem_post(&naves_en_posicion); // aviso que estoy lista
+    
+    // Fase 2: Esperar orden de ataque y atacar
+    sem_wait(&orden_ataque);
+    atacarMegaciudad();
+    sem_post(&sincronizacion_batalla); // Aviso que terminé de atacar
+    
+    return NULL;
 }
 void* ciudades(void* arg){
-        sem_wait(&orden_ataque); // espero la orden del comandante
-        atacarMegaciudad();
-        iniciarPotocoloDefensivo();
-        contraatacarNaves();
-        perderBatalla();
-        sem_post(&ciudades_caidas); // aviso que ya caí
+    // Esperar a que la nave correspondiente ataque primero
+    sem_wait(&sincronizacion_batalla);
+    
+    // Ahora la ciudad se defiende
+    iniciarProtocoloDefensivo();
+    contraatacarNaves();
+    sem_post(&ciudades_caidas); // aviso que ya caí
+    
+    return NULL;
 }
 void* comandante(void* arg){
          // Espero a las 33 naves
@@ -75,6 +87,7 @@ void* comandante(void* arg){
         }
 
         // Luego el comandante baja y ocurre el final
+        perderBatalla();
         descenderATierra();
         abrirCompuertas();
         abandonarTierra();
@@ -85,6 +98,7 @@ int main(void){
         sem_init(&naves_en_posicion, 0, 0);
         sem_init(&orden_ataque, 0, 0);
         sem_init(&ciudades_caidas, 0, 0);
+        sem_init(&sincronizacion_batalla,0,0);
         //Defino el arreglo de threads
         pthread_t presidentes_threads[15];
         pthread_t naves_destructoras_threads[33];
@@ -122,6 +136,7 @@ int main(void){
         sem_destroy(&naves_en_posicion);
         sem_destroy(&orden_ataque);
         sem_destroy(&ciudades_caidas);
+        sem_destroy(&sincronizacion_batalla);
 
         return 0;
 }
