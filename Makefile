@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -O0
+CFLAGS = -Wall -Wextra -std=c99 -O0 -lpthread
 
 # Target binary
 TARGET = build/main
