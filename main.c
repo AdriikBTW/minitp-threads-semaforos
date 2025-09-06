@@ -174,6 +174,7 @@ int main(void)
         sem_destroy(&orden_ataque);
         sem_destroy(&ciudades_caidas);
         sem_destroy(&sincronizacion_batalla);
+        sem_destroy(&presidentes_charla);
 
         return 0;
 }
