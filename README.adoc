@@ -144,3 +144,31 @@ ciudad:                                 |                |
         contraatacarNaves()             |
         post(ciudades_caidas) ----------´
 ----
+
+El flujo y sincronización de los hilos y semáforos es el siguiente:
+
+Todos los hilos son ejecutados con sus funciones correspondientes.
+
+Los hilos que representan los presidentes bloquean la sección crítica para que 
+solo un hilo hable con el comandante a la vez. Cuando este finaliza, libera el 
+semáforo para que el siguiente presidente pueda hablar.
+
+Los hilos que representan las naves destructoras se posicionan en las ciudades 
+correspondientes, incrementando el semáforo para avisar al comandante de que estas 
+ya están en su posición. Las naves quedan en espera a que el comandante les de 
+la orden de ataque para proseguir.
+
+El hilo que representa el comandante espera que las naves totales estén en posición 
+para poder seguir el flujo de ejecución. Una vez que todas las naves están en 
+posición, ordena a las naves que ataquen las ciudades. +
+Las naves una vez recibida la orden, continuan el flujo de ejecución y atacan las 
+ciudades, y mandan la señal de que terminaron de atacar.
+
+Los hilos que representan las ciudades esperan que la señal que han sido atacadas 
+esté activa para poder empezar la ejecución y defenderse. Una vez que se defendieron 
+sin éxito, envían la señal de que han caído.
+
+El comandante espera la señal de que todas las ciudades estén caídas para continuar 
+y descender a la tierra, para darse cuenta demasiado tarde que el polen de la 
+tierra es un veneno letal para los alienígenas, dando lugar a su aniquilación. 
+El comandante decide retirarse.
