@@ -109,3 +109,38 @@ Ejecutar descenderATierra
 Ejecutar abrirCompuertas
 Ejecutar abandonarTierra
 ----
+
+=== Sincronización de semáforos
+
+[source]
+----
+presidentes:
+     ,---> wait(comandante)
+x15  |     hablarConComandanteExtraterrestre()
+     |     presentarseALideresMundiales()
+     `---- post(comandante)
+
+naves_destructoras:
+        tomarPosicionEnMegaCiudad()
+        post(naves_en_posicion) ----------------.
+        wait(orden_ataque) <------------.       | x33
+        atacarMegaciudad()              | x33   |
+        post(sincronizacion_batalla) ---+-------+--------.
+                                        |       |        |
+comandante:                             |       |        |
+        wait(naves_en_posicion) <-------+-------´        |
+                                        |                |
+        post(orden_ataque) -------------´                |
+        wait(ciudades_caidas) <---------.                |
+                                        |                |
+        perderBatalla()                 |            x33 |
+        descenderATierra()              |                |
+        abrirCompuertas()           x33 |                |
+        abandonarTierra()               |                |
+                                        |                |
+ciudad:                                 |                |
+        wait(sincronizacion_batalla) <--+----------------´
+        iniciarProtocoloDefensivo()     |
+        contraatacarNaves()             |
+        post(ciudades_caidas) ----------´
+----
