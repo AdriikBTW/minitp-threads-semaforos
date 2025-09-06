@@ -2,6 +2,9 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#define CANT_PRESIDENTES 15
+#define CANT_NAVES_Y_CIUDADES 33
+
 // Defino los semáforos
 sem_t mutex_comandante;
 sem_t naves_en_posicion;
@@ -101,16 +104,16 @@ void *ciudades(void *arg)
 void *comandante(void *arg)
 {
         // Espero a las 33 naves
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
                 sem_wait(&naves_en_posicion);
         }
         // Orden de ataque → desbloquea a todas las ciudades
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
                 sem_post(&orden_ataque);
         }
 
         // Espero a que caigan todas las ciudades
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
                 sem_wait(&ciudades_caidas);
         }
 
@@ -130,34 +133,34 @@ int main(void)
         sem_init(&ciudades_caidas, 0, 0);
         sem_init(&sincronizacion_batalla, 0, 0);
         // Defino el arreglo de threads
-        pthread_t presidentes_threads[15];
-        pthread_t naves_destructoras_threads[33];
-        pthread_t ciudades_threads[33];
+        pthread_t presidentes_threads[CANT_PRESIDENTES];
+        pthread_t naves_destructoras_threads[CANT_NAVES_Y_CIUDADES];
+        pthread_t ciudades_threads[CANT_NAVES_Y_CIUDADES];
         pthread_t comandante_thread;
 
         // Creo los hilos
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < CANT_PRESIDENTES; i++) {
                 pthread_create(&presidentes_threads[i], NULL, presidentes,
                                NULL);
         }
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
                 pthread_create(&naves_destructoras_threads[i], NULL,
                                naves_destructoras, NULL);
         }
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
 
                 pthread_create(&ciudades_threads[i], NULL, ciudades, NULL);
         }
         pthread_create(&comandante_thread, NULL, comandante, NULL);
 
         // Finalizo los hilos
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < CANT_PRESIDENTES; i++) {
                 pthread_join(presidentes_threads[i], NULL);
         }
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
                 pthread_join(naves_destructoras_threads[i], NULL);
         }
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
                 pthread_join(ciudades_threads[i], NULL);
         }
         pthread_join(comandante_thread, NULL);
