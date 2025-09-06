@@ -7,9 +7,105 @@ v1, {docdate}, COM-02. Docentes Andres Rojas Paredes; Leandro Dikenstein Hidalgo
 :toc-title: Índice
 :source-highlighter: coderay
 
-== Lorem Ipsum
+== Pseudocódigo
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-Ut enim aeque doleamus animo , cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. 
-Quod idem licet transferre in voluptatem , ut postea variari voluptas distinguique possit, augeri amplificarique non possit. 
-At etiam Athenis, ut e patre audiebam facete et urbane Stoicos irridente, statua est in quo a nobis philosophia defensa et collaudata est, cum id, quod maxime placeat , facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
+=== main
+
+[source]
+----
+Inicio el semáforo mutex_comandante
+Inicio el semáforo naves_en_posicion
+Inicio el semáforo orden_ataque
+Inicio el semáforo ciudades_caidas
+Inicio el semáforo sincronizacion_batalla
+
+Declaro los threads presidentes_threads;
+Declaro los threads naves_destructoras_threads;
+Declaro los threads ciudades_threads;
+Declaro el thread comandante_thread;
+
+Por las N cantidad de presidentes:
+        Inicio los threads presidentes_threads con la función presidente
+
+Por las N cantidad de naves:
+        Inicio los threads naves_destructoras_threads con la función naves_destructoras
+
+Por las N cantidad de ciudades:
+        Inicio los threads ciudades_threads con la función ciudades
+
+Inicio el thread comandante_thread con la función comandante
+
+Por las N cantidad de presidentes:
+        Espero y finalizo los threads presidentes_threads
+
+Por las N cantidad de naves:
+        Espero y finalizo los threads naves_destructoras_threads
+
+Por las N cantidad de ciudades:
+        Espero y finalizo los threads ciudades_threads
+
+Espero y finalizo el thread comandante_thread
+
+Destruyo el semáforo mutex_comandante
+Destruyo el semáforo naves_en_posicion
+Destruyo el semáforo orden_ataque
+Destruyo el semáforo ciudades_caidas
+Destruyo el semáforo sincronizacion_batalla
+----
+
+<<<
+
+=== presidentes
+
+[source]
+----
+Bloquear semáforo mutex_comandante para que un presidente hable con comandante
+
+Ejecutar hablarConComandanteExtraterrestre
+Ejecutar presentarseALideresMundiales
+
+Liberar semáforo mutex_comandante para que el siguiente presidente hable
+----
+
+=== naves_destructoras
+
+[source]
+----
+Ejecutar tomarPosicionEnMegaCiudad
+Incrementar semáforo naves_en_posicion avisando que la nave está en posición
+
+Esperar semáforo orden_ataque para empezar el ataque
+Ejecutar atacarMegaciudad
+Incrementar sincronizacion_batalla para avisar que el ataque a la ciudad terminó
+----
+
+=== ciudades
+
+[source]
+----
+Esperar semáforo sincronizacion_batalla para empezar a defenderse
+
+Ejecutar iniciarProtocoloDefensivo
+Ejecutar contraatacarNaves
+
+Incrementar semáforo ciudades_caidas avisando que la ciudad fue derrotada
+----
+
+=== comandante
+
+[source]
+----
+Por las N cantidad de naves:
+        Decremento el semáforo naves_en_posicion para empezar el ataque
+
+Por las N cantidad de naves:
+        Incrementar el semáforo orden_ataque para que las naves empiecen a atacar
+
+Por las N cantidad de ciudades:
+        Espero el semáforo ciudades_caidas para saber que todas las ciudades cayeron
+
+Ejecutar perderBatalla
+Ejecutar descenderATierra
+Ejecutar abrirCompuertas
+Ejecutar abandonarTierra
+----
