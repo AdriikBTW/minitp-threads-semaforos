@@ -104,18 +104,16 @@ void *ciudades(void *arg)
 void *comandante(void *arg)
 {
         // Espero a las 33 naves
-        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 sem_wait(&naves_en_posicion);
-        }
+
         // Orden de ataque → desbloquea a todas las ciudades
-        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 sem_post(&orden_ataque);
-        }
 
         // Espero a que caigan todas las ciudades
-        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 sem_wait(&ciudades_caidas);
-        }
 
         // Luego el comandante baja y ocurre el final
         perderBatalla();
@@ -139,30 +137,29 @@ int main(void)
         pthread_t comandante_thread;
 
         // Creo los hilos
-        for (int i = 0; i < CANT_PRESIDENTES; i++) {
+        for (int i = 0; i < CANT_PRESIDENTES; i++)
                 pthread_create(&presidentes_threads[i], NULL, presidentes,
                                NULL);
-        }
-        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
+
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 pthread_create(&naves_destructoras_threads[i], NULL,
                                naves_destructoras, NULL);
-        }
-        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
 
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 pthread_create(&ciudades_threads[i], NULL, ciudades, NULL);
-        }
+
         pthread_create(&comandante_thread, NULL, comandante, NULL);
 
         // Finalizo los hilos
-        for (int i = 0; i < CANT_PRESIDENTES; i++) {
+        for (int i = 0; i < CANT_PRESIDENTES; i++)
                 pthread_join(presidentes_threads[i], NULL);
-        }
-        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
+
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 pthread_join(naves_destructoras_threads[i], NULL);
-        }
-        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++) {
+
+        for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 pthread_join(ciudades_threads[i], NULL);
-        }
+
         pthread_join(comandante_thread, NULL);
 
         // Destruyo los semáforos
