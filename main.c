@@ -11,6 +11,7 @@ sem_t naves_en_posicion;
 sem_t orden_ataque;
 sem_t ciudades_caidas;
 sem_t sincronizacion_batalla;
+sem_t presidentes_charla;
 
 void hablarConComandanteExtraterrestre()
 {
@@ -72,6 +73,7 @@ void *presidentes(void *arg)
         hablarConComandanteExtraterrestre();
         presentarseALideresMundiales();
         sem_post(&mutex_comandante);
+        sem_post(&presidentes_charla);
 }
 
 void *naves_destructoras(void *arg)
@@ -103,6 +105,9 @@ void *ciudades(void *arg)
 
 void *comandante(void *arg)
 {
+        for (int i = 0; i < CANT_PRESIDENTES; i++)
+                sem_wait(&presidentes_charla);
+
         // Espero a las 33 naves
         for (int i = 0; i < CANT_NAVES_Y_CIUDADES; i++)
                 sem_wait(&naves_en_posicion);
@@ -130,6 +135,7 @@ int main(void)
         sem_init(&orden_ataque, 0, 0);
         sem_init(&ciudades_caidas, 0, 0);
         sem_init(&sincronizacion_batalla, 0, 0);
+        sem_init(&presidentes_charla, 0, 0);
         // Defino el arreglo de threads
         pthread_t presidentes_threads[CANT_PRESIDENTES];
         pthread_t naves_destructoras_threads[CANT_NAVES_Y_CIUDADES];
