@@ -172,3 +172,36 @@ El comandante espera la señal de que todas las ciudades estén caídas para con
 y descender a la tierra, para darse cuenta demasiado tarde que el polen de la 
 tierra es un veneno letal para los alienígenas, dando lugar a su aniquilación. 
 El comandante decide retirarse.
+
+== Inanición
+
+En el esquema de sincronización que armamos, todos los hilos dependen de la coordinación con semáforos para avanzar, lo que significa que en general no debería existir inanición porque cada wait tiene su post correspondiente. Sin embargo, sí podemos identificar escenarios hipotéticos donde, si algo se rompe o se retrasa, el sistema puede quedar “trabado” o detenido indefinidamente:
+
+=== Presidentes y el comandante
+
+Todos los hilos de las naves y ciudades tienen que esperar a que los presidentes terminen de hablar con el comandante. Esto implica que si un presidente tarda demasiado (imaginemos que uno de los hilos queda bloqueado mucho tiempo dentro de la función), el flujo completo se retrasa.
+
+En este caso, los hilos de las naves quedan esperando para ponerse en posición y, en consecuencia, las ciudades tampoco avanzan porque nunca reciben la orden de ataque.
+
+Es un ejemplo de cómo un solo hilo puede ralentizar a todo el sistema.
+
+=== Naves en posición
+
+El ataque debe comenzar de manera simultánea, y para eso el comandante espera a que todas las naves reporten su posición. Si una sola nave tarda mucho más que las demás en llegar, todo el ataque se demora.
+
+Esto no es inanición en el sentido clásico (porque tarde o temprano la nave reportará), pero sí genera un cuello de botella que puede detener al resto.
+
+=== Defensa de las ciudades
+
+Después del ataque, cada ciudad inicia su protocolo defensivo y contraataca antes de caer. El comandante no puede descender hasta que todas las ciudades hayan sido derrotadas.
+
+Eso significa que, si alguna ciudad tarda demasiado en ejecutar su secuencia (por ejemplo, por un retardo en el semáforo o un error en el hilo), el comandante se queda esperando.
+
+Otra vez, el sistema entero depende de que todos los participantes cumplan su parte.
+
+=== Errores de implementación: el caso crítico del post
+Si por error se olvida un sem_post en el código, por ejemplo, el sem_post(&orden_ataque) que libera a todas las naves para comenzar el ataque, entonces los hilos que esperan ese permiso (en este caso las naves) nunca avanzan. Eso genera una situación de bloqueo permanente que se propaga:
+
+* Las ciudades no reciben ataques -> no pueden defenderse.
+* El comandante nunca recibe la señal de que las ciudades cayeron -> no desciende.
+* El programa entero se paraliza.
